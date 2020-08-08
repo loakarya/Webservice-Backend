@@ -1,6 +1,5 @@
 <p align="center"><img src="https://miro.medium.com/max/800/1*xjpFWCxnaa3FSUHlvQGZvA.png" alt="Lumen Logo" width="176" height="66" /></p>
-<h1 style="text-align: center;"><strong>Loak.co Portal Backend</strong></h1>
-<hr />
+<h1 align="center"><strong>Loak.co Portal Backend</strong></h1>
 <p style="text-align: left;">This source code is made by Lumen framework. The features of this backend portal contain:</p>
 <ol>
 <li style="text-align: left;">User Management</li>
@@ -14,4 +13,4 @@
 </ol>
 <p><strong>Full documentation is at the following link:</strong> <em>(coming soon)</em></p>
 <hr />
-<p style="text-align: center;"><span style="color: #808080;">Fikri Rida Pebriansyah (C) 2020</span></p>
+<p align="center">Fikri Rida Pebriansyah &#169; 2020</p>
