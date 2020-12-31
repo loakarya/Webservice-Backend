@@ -1,5 +1,0 @@
----
-deployment:
-  tasks:
-    - export DEPLOYPATH=/home/loakarya/api.loakarya.com/iot
-    - /usr/bin/rsync -Paz * $DEPLOYPATH --delete
