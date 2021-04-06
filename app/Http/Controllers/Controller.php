@@ -35,20 +35,18 @@ class Controller extends BaseController
 
     public function sendInvalidId( $item = '<insert item name here>' ) {
         return response()->json([
-            'status' => false,
             'message' => 'Invalid ' . $item . ' id.'
         ], 404); 
     }
 
     public function sendServerError() {
         return response()->json([
-            'status' => false,
-            'message' => "Server error."
+            'message' => "Failed to execute task."
         ], 500);
     }
 
     public function sendSuccess() {
-        return response()->json(['status' => true], 201);
+        return response()->json(['message' => 'The action was successfully executed.'], 201);
     }
 
     public function sendActionResult( $action ) {
@@ -74,7 +72,6 @@ class Controller extends BaseController
 
     public function sendValidationError ( $error ){
         return response()->json([
-            'status' => false,
             'message' => $error
         ], 422 );
     }
