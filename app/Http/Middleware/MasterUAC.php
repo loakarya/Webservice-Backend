@@ -16,11 +16,18 @@ class MasterUAC
      */
     public function handle(Request $request, Closure $next)
     {
-        if ( auth()->user() != null or auth()->user()->acl == 2 )
-        return $next($request);
+        if ( !auth()->check() )
+            return response()->json([
+                'status' => false,
+                'message' => 'You are not logged in.'
+            ], 401);
+
+        if ( auth()->user() != null and auth()->user()->acl == 2 )
+            return $next($request);
 
         return response()->json([
-            'error' => 'You are not an admin'
+            'status' => false,
+            'message' => 'You are not an admin'
         ], 403);
     }
 }

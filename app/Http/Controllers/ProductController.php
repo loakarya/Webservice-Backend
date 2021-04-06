@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Models\FeaturedProduct;
@@ -72,7 +73,7 @@ class ProductController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function storeComingSoon(Request $request)
     {
         $validation = Validator::make( $request->all(), [
             'picture_1' => 'required|image|max:2048',
@@ -106,7 +107,64 @@ class ProductController extends Controller
         return $this->sendActionResult( $product->save() );
     }
 
-       /**
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+        $validation = Validator::make( $request->all(), [
+            'title' => 'required|max:200',
+            'slug' => 'required|max:210',
+            'detail' => 'required|max:500',
+            'material' => 'required|max:200',
+            'thumbnail_url' => 'required|max:200',
+            'picture_url_1' => 'required|max:200',
+            'picture_url_2' => 'max:200',
+            'picture_url_3' => 'max:200',
+            'picture_url_4' => 'max:200',
+            'picture_url_5' => 'max:200',
+            'price' => 'required|integer',
+            'discount' => 'required|integer',
+            'category' => 'required|integer|gte:0|lte:2',
+            'tokopedia_order_link' => 'max:200',
+            'shopee_order_link' => 'max:200',
+            'bukalapak_order_link' => 'max:200',
+        ]);
+
+        $product = new Product;
+        $product->user_id = Auth::id();
+        $product->title = $request->title;
+        $product->slug = $request->slug;
+        $product->detail = $request->detail;
+        $product->material = $request->material;
+        $product->thumbnail_url = $request->thumbnail_url;
+        $product->picture_url_1 = $request->picture_url_1;
+        $product->picture_url_2 = $request->picture_url_2;
+        $product->picture_url_3 = $request->picture_url_3;
+        $product->picture_url_4 = $request->picture_url_4;
+        $product->picture_url_5 = $request->picture_url_5;
+        $product->price = $request->price;
+        $product->discount = $request->discount;
+        $product->category = $request->category;
+        $product->tokopedia_order_link = $request->tokopedia_order_link;
+        $product->shopee_order_link = $request->shopee_order_link;
+        $product->bukalapak_order_link = $request->bukalapak_order_link;
+
+        return $this->sendActionResult( $product->save() );
+    }
+
+    public function uploadImage( Request $request ) {
+        $path = $request->file('upload')->store('public/product');
+
+        return response()->json( [
+            'url' => env('APP_URL') . Storage::url($path)
+        ]);
+    }
+
+    /**
      * Display the specified resource.
      *
      * @param  \Illuminate\Http\Request
@@ -173,16 +231,9 @@ class ProductController extends Controller
      * @param  \Illuminate\Http\Request
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request)
+    public function destroy(Request $request, $id)
     {
-        $validation = Validator::make ( $request, [
-            'id' => 'required|integer'
-        ]);
-
-        if ($validation->fails())
-            return $this->sendValidationError( $validation->errors() );
-
-        $product = User::find( Auth::id() )->products()->where( 'id', $request->id );
+        $product = User::find( Auth::id() )->products()->where( 'id', $id );
 
         if ( $product->doesntExist() )
             return $this->sendInvalidId('product');

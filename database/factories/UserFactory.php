@@ -26,14 +26,13 @@ class UserFactory extends Factory
             'first_name' => $this->faker->firstName,
             'last_name'=> $this->faker->lastName,
             'email'=> $this->faker->unique()->safeEmail,
+            'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
             'email_verified_at' => now(),
-            'password'=> '$2y$10$lnnCFBExqOfGzbk3AovLcufqSaT0BDe52ZujwihoTAj5F7uxQZd.K',
             'address'=> $this->faker->address,
             'zip_code'=> $this->faker->postcode,
             'city'=> $this->faker->city,
             'province'=> $this->faker->state,
             'country'=> $this->faker->country,
-            'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
             'remember_token' => Str::random(10),
         ];
     }

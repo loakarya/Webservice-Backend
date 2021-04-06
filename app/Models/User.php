@@ -5,12 +5,13 @@ namespace App\Models;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-class User extends Authenticatable implements JWTSubject
+class User extends Authenticatable implements JWTSubject, MustVerifyEmail
 {
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, SoftDeletes;
 
     // Rest omitted for brevity
 
@@ -73,7 +74,7 @@ class User extends Authenticatable implements JWTSubject
     }
 
     public function faqs() {
-        return $this->hasMany('App\FAQ');
+        return $this->hasMany('App\Models\FAQ');
     }
 
     public function articles() {
@@ -85,7 +86,7 @@ class User extends Authenticatable implements JWTSubject
     }
 
     public function products() {
-        return $this->hasMany('App\Product');
+        return $this->hasMany('App\Models\Product');
     }
 
     public function forms() {
@@ -100,7 +101,11 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany('App\DeviceType');
     }
 
-    public function token() {
-        return $this->hasOne('App\Token');
+    public function employee() {
+        return $this->hasOne('App\Models\Employee');
+    }
+
+    public function companyaccount() {
+        return $this->hasMany('App\Models\CompanyAccount');
     }
 }

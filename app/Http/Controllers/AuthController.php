@@ -21,29 +21,23 @@ class AuthController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function login()
+    public function login( Request $request )
     {
         $credentials = request(['email', 'password']);
 
-        if (! $token = auth()->attempt($credentials)) {
-            return response()->json(['error' => 'Unauthorized'], 401);
+        if ($request->filled('remember')) {
+            if (! $token = auth()->setTTL(2592000)->attempt($credentials)) {
+                return response()->json(['message' => 'Unauthorized'], 401);
+            }
+        } else {
+            if (! $token = auth()->attempt($credentials)) {
+                return response()->json(['message' => 'Unauthorized'], 401);
+            }
         }
-
-        return $this->respondWithToken($token);
-    }
-
-    /**
-     * Get a JWT via given credentials.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function loginPersistent()
-    {
-        $credentials = request(['email', 'password']);
-
-        if (! $token = auth()->setTTL(2592000)->attempt($credentials)) {
-            return response()->json(['error' => 'Unauthorized'], 401);
-        }
+        
+        $user = auth()->user()->first();
+        $user->last_ip = $request->ip();
+        $user->save();
 
         return $this->respondWithToken($token);
     }
@@ -67,7 +61,7 @@ class AuthController extends Controller
     {
         auth()->logout();
 
-        return response()->json(['message' => 'Successfully logged out']);
+        return response()->json(['message' => 'Successfully logged out.']);
     }
 
     /**

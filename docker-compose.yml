@@ -43,6 +43,22 @@ services:
       - ./docker-compose/nginx:/etc/nginx/conf.d
     networks:
       - loakarya
+
+  phpmyadmin:
+    image: phpmyadmin:5.1.0
+    container_name: loakarya-phpmyadmin
+    restart: always
+    ports:
+      - 9090:80
+    environment:
+      PMA_ARBITRARY: 1
+      PMA_HOST: loakarya-db
+      PMA_PORT: 3306
+      PMA_USER: ${DB_USERNAME}
+      PMA_PASSWORD: ${DB_PASSWORD}
+    networks:
+      - loakarya
+
 networks:
   loakarya:
     driver: bridge
