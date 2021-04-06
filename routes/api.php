@@ -3,11 +3,16 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
+
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\ArticleCategoryController;
 use App\Http\Controllers\FAQController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\CompanyAccountController;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,12 +26,19 @@ use App\Http\Controllers\ProductController;
 */
 
 Route::group([ 'prefix' => 'auth' ], function () {
-    Route::post('login', [AuthController::class, 'login'])->name('login');
-    Route::post('logout', [AuthController::class, 'logout']);
-    Route::post('refresh', [AuthController::class, 'refresh']);
-    Route::post('me', [AuthController::class, 'me']);
+    Route::get('/login', function() {
+        return response()->json(['message' => 'Please check your auth token!'], 401);
+    });
+    Route::post('/login', [AuthController::class, 'login'])->name('login');
+    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::post('/refresh', [AuthController::class, 'refresh']);
+    Route::get('/me', [AuthController::class, 'me'])->middleware('auth');
 });
 
+Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+    $request->fulfill();
+    return response()->json(['message' => 'The email has been verified!']);
+})->middleware(['auth'])->name('verification.verify');
 
 $router->group([ 'prefix' => 'profile' ], function() use ($router) {
     $router->get('/products', [ProductController::class, 'showFeatured']);
@@ -88,11 +100,71 @@ $router->group([ 'prefix' => 'product' ], function() use ($router) {
     $router->group([ 'middleware' => 'admin' ], function() use($router) {
         $router->put('/', [ProductController::class, 'store']);
         $router->patch('/', [ProductController::class, 'update']);
-        $router->delete('/', [ProductController::class, 'destroy']);
+        $router->delete('/{id}', [ProductController::class, 'destroy']);
         $router->post('/user', [ProductController::class, 'indexOwned']);
+        $router->post('/image', [ProductController::class, 'uploadImage']);
     });
 });
 
+$router->group( ['prefix' => 'user' ], function() use($router) {
+    $router->put('/', [UserController::class, 'store']);
+    $router->get('/email', [UserController::class, 'EmailLogIn']);
+    
+    $router->group([ 'middleware' => 'auth:api' ], function() use($router) {
+        $router->patch('/', [UserController::class, 'updateDetails']);
+        $router->delete('/', [UserController::class, 'destroy']);
+        $router->post('/', [UserController::class, 'show']);
+        $router->patch('/email', [UserController::class, 'updateEmail']);
+        $router->patch('/password', [UserController::class, 'updatePassword']);
+        $router->patch('/username', [UserController::class, 'updateUsername']);
+    });
+    
+    $router->group([ 'middleware' => 'admin' ], function() use($router) {
+        $router->post('/man', [UserController::class, 'showUserDetails']);
+        $router->patch('/man', [UserController::class, 'updateUserDetails']);
+        $router->get('/man', [UserController::class, 'index']);
+        $router->post('/man/search', [UserController::class, 'search']);
+        $router->delete('/man/{id}', [UserController::class, 'destroyUser']);
+    });
+
+    $router->group([ 'middleware' => 'master' ], function() use($router) {
+        $router->get('/man/all', [UserController::class, 'indexAll']);
+        $router->get('/man/deleted', [UserController::class, 'indexTrashed']);
+        $router->delete('/man/deleted', [UserController::class, 'nukeUser']);
+        $router->patch('/man/acl/{id}', [UserController::class, 'updateUserAcl']);
+    });
+});
+
+$router->group( ['prefix' => 'employee' ], function() use($router) {
+    
+    $router->group([ 'middleware' => 'admin' ], function() use($router) {
+        $router->get('/', [EmployeeController::class, 'index']);
+        $router->get('/{id}', [EmployeeController::class, 'show']);
+    });
+
+    $router->group([ 'middleware' => 'master' ], function() use($router) {
+        $router->put('/{id}', [EmployeeController::class, 'store']);
+        $router->patch('/', [EmployeeController::class, 'update']);
+        $router->patch('/email/randomize', [EmployeeController::class, 'randomizeCompanyEmailPassword']);
+    });
+
+});
+
+$router->group( ['prefix' => 'account' ], function() use($router) {
+    
+    $router->group([ 'middleware' => 'admin' ], function() use($router) {
+
+    });
+
+    $router->group([ 'middleware' => 'master' ], function() use($router) {
+        $router->get('/', [CompanyAccountController::class, 'index']);
+        $router->put('/', [CompanyAccountController::class, 'store']);
+        $router->post('/{id}', [CompanyAccountController::class, 'show']);
+        $router->delete('/{id}', [CompanyAccountController::class, 'destroy']);
+        $router->patch('/{id}', [CompanyAccountController::class, 'update']);
+    });
+    
+});
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
