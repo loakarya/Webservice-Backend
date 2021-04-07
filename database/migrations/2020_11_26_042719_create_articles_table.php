@@ -13,19 +13,19 @@ class CreateArticlesTable extends Migration
      */
     public function up()
     {
-        // Schema::create('articles', function (Blueprint $table) {
-        //     $table->id();
-        //     $table->foreignId('user_id');
-        //     $table->string('title', 100);
-        //     $table->string('subtitle', 100);
-        //     $table->string('slug', 100);
-        //     $table->string('thumbnail_url', 200);
-        //     $table->integer('category')->unsigned()->default(0);
-        //     $table->longtext('content');
-        //     $table->timestamps();
-        //     $table->softDeletes();
-        //     $table->bigInteger('intervention')->nullable()->unsigned();
-        // });
+        Schema::create('articles', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('user_id');
+            $table->string('title', 100);
+            $table->string('subtitle', 100);
+            $table->string('slug', 100);
+            $table->string('thumbnail_url', 200);
+            $table->integer('category')->unsigned()->default(0);
+            $table->longtext('content');
+            $table->timestamps();
+            $table->softDeletes();
+            $table->bigInteger('intervention')->nullable()->unsigned();
+        });
     }
 
     /**
@@ -35,6 +35,6 @@ class CreateArticlesTable extends Migration
      */
     public function down()
     {
-        // Schema::dropIfExists('articles');
+        Schema::dropIfExists('articles');
     }
 }

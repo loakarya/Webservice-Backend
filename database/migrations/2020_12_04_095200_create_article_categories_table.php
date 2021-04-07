@@ -13,12 +13,12 @@ class CreateArticleCategoriesTable extends Migration
      */
     public function up()
     {
-        // Schema::create('article_categories', function (Blueprint $table) {
-        //     $table->id();
-        //     $table->foreignId('user_id');
-        //     $table->string('name');
-        //     $table->timestamps();
-        // });
+        Schema::create('article_categories', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('user_id');
+            $table->string('name');
+            $table->timestamps();
+        });
     }
 
     /**
@@ -28,6 +28,6 @@ class CreateArticleCategoriesTable extends Migration
      */
     public function down()
     {
-        // Schema::dropIfExists('article_categories');
+        Schema::dropIfExists('article_categories');
     }
 }
