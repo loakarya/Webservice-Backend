@@ -108,7 +108,7 @@ $router->group([ 'prefix' => 'product' ], function() use ($router) {
 
 $router->group( ['prefix' => 'user' ], function() use($router) {
     $router->put('/', [UserController::class, 'store']);
-    $router->get('/email', [UserController::class, 'EmailLogIn']);
+    
     
     $router->group([ 'middleware' => 'auth:api' ], function() use($router) {
         $router->patch('/', [UserController::class, 'updateDetails']);
@@ -139,11 +139,12 @@ $router->group( ['prefix' => 'employee' ], function() use($router) {
     
     $router->group([ 'middleware' => 'admin' ], function() use($router) {
         $router->get('/', [EmployeeController::class, 'index']);
-        $router->get('/{id}', [EmployeeController::class, 'show']);
+        $router->get('/email', [EmployeeController::class, 'EmailLogIn']);
+        $router->get('/view/{id}', [EmployeeController::class, 'show']);
     });
 
     $router->group([ 'middleware' => 'master' ], function() use($router) {
-        $router->put('/{id}', [EmployeeController::class, 'store']);
+        $router->put('/', [EmployeeController::class, 'store']);
         $router->patch('/', [EmployeeController::class, 'update']);
         $router->patch('/email/randomize', [EmployeeController::class, 'randomizeCompanyEmailPassword']);
     });
