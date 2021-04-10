@@ -309,10 +309,22 @@ class ArticleController extends Controller
     }
 
     public function uploadImage( Request $request ) {
+        $validation = Validator::make( $request->all(), [
+            'upload' => 'required|image|max:2048',
+        ]);
+
+        if ($validation->fails())
+            return $this->sendValidationError( $validation->errors() );
+        
+        if ( !$request->upload->isValid() )
+            return response()->json( [
+                'status' => false,
+                'message' => 'Invalid image file.'], 400 );
+
         $path = $request->file('upload')->store('public/article');
 
         return response()->json( [
-            'url' => env('APP_URL') . Storage::url($path)
+            'url' => url(Storage::url($path))
         ]);
     }
 }
