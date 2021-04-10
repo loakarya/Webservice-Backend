@@ -10,7 +10,7 @@ use Illuminate\Notifications\Notification;
 class EmployeeRegistered extends Notification implements ShouldQueue
 {
     use Queueable;
-
+    
     /**
      * Create a new notification instance.
      *
@@ -45,7 +45,7 @@ class EmployeeRegistered extends Notification implements ShouldQueue
                     ->subject("Greetings! Welcome to Loakarya Indonesia's Team")
                     ->line('Welcome to our company, ' . $notifiable->user->first_name . " " . $notifiable->user->last_name . '.')
                     ->line('We hope you will enjoy our journey together.')
-                    ->action('Please click here to set your password.', env('EMPLOYEE_SET_PASSWORD_LINK') . "?token=" . $token)
+                    ->action('Please click here to set your password.', "https://staff.loakarya.co/setpassword?token=" . $token)
                     ->line('The link above is only valid for 24 hours. Please set your password immidiately.')
                     ->line('To log in to the staff portal, please use your company email (' . $notifiable->user->email . ')')
                     ->line('Thank you for choosing us!');
