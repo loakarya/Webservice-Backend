@@ -147,6 +147,7 @@ $router->group( ['prefix' => 'employee' ], function() use($router) {
         $router->put('/', [EmployeeController::class, 'store']);
         $router->patch('/', [EmployeeController::class, 'update']);
         $router->patch('/email/randomize', [EmployeeController::class, 'randomizeCompanyEmailPassword']);
+        $router->delete('/{id}', [EmployeeController::class, 'destroy']);
     });
 
 });
