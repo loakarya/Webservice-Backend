@@ -13,6 +13,7 @@ services:
     working_dir: /var/www/
     volumes:
       - ./:/var/www
+      - ./docker-compose/supervisor:/etc/supervisor/conf.d
     networks:
       - loakarya
 
@@ -29,8 +30,6 @@ services:
       - ./docker-compose/mysql:/docker-entrypoint-initdb.d
     networks:
       - loakarya
-    ports:
-      - 9000:3306
 
   nginx:
     image: nginx:latest
