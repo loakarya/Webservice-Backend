@@ -28,6 +28,6 @@ class SendEmployeeGreeting implements ShouldQueue
      */
     public function handle(EmployeeRegistered $event)
     {
-        $event->user->notify(new EmployeeRegisteredNotification($event->user));
+        $event->user->notify(new EmployeeRegisteredNotification());
     }
 }
