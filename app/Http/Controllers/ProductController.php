@@ -134,6 +134,9 @@ class ProductController extends Controller
             'bukalapak_order_link' => 'max:200',
         ]);
 
+        if ($validation->fails())
+        return $this->sendValidationError( $validation->errors() );
+    
         $product = new Product;
         $product->user_id = Auth::id();
         $product->title = $request->title;
@@ -157,10 +160,22 @@ class ProductController extends Controller
     }
 
     public function uploadImage( Request $request ) {
+        $validation = Validator::make( $request->all(), [
+            'upload' => 'required|image|max:2048',
+        ]);
+
+        if ($validation->fails())
+            return $this->sendValidationError( $validation->errors() );
+        
+        if ( !$request->upload->isValid() )
+            return response()->json( [
+                'status' => false,
+                'message' => 'Invalid image file.'], 400 );
+
         $path = $request->file('upload')->store('public/product');
 
         return response()->json( [
-            'url' => env('APP_URL') . Storage::url($path)
+            'url' => url(Storage::url($path))
         ]);
     }
 
