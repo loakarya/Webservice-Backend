@@ -40,7 +40,7 @@ class EmployeeController extends Controller
             'city' => 'required|max:190',
             'province' => 'required|max:90',
             'country' => 'required|max:90',
-            'employee_id' => 'required|integer|gte:0|unique:employees,employee_id',
+            'employee_number' => 'required|integer|gte:0|unique:employees,employee_number',
             'private_email' => 'required|email|max:100|unique:employees,private_email',
             'bank_account_number' => 'required',
             'bank_account_provider' => 'required|max:100',
@@ -52,7 +52,7 @@ class EmployeeController extends Controller
             return $this->sendValidationError( $validation->errors() );
 
         $user = new User;
-        $user->password = Hash::make(env('EMPLOYEE_DEFAULT_PASSWORD'));
+        $user->password = Hash::make(config('etc.employee_default_password'));
         $user->email = $request->email;
         $user->first_name = $request->first_name;
         $user->last_name = $request->last_name;
@@ -71,7 +71,7 @@ class EmployeeController extends Controller
         $employee = new Employee;
         $userCompanyEmailPassword = Str::random(40);
 
-        $employee->employee_id = $request->employee_id;
+        $employee->employee_number = $request->employee_number;
         $employee->private_email = $request->private_email;
         $employee->company_email_password = Crypt::encryptString($userCompanyEmailPassword);
         $employee->bank_account_number = $request->bank_account_number;
@@ -96,6 +96,18 @@ class EmployeeController extends Controller
 
     }
 
+    public function destroy($id) {
+        $employee = Employee::where('id', $id);
+
+        if ( $employee->doesntExist() )
+            return $this->sendInvalidId('user');
+
+        $employee = $employee->first();
+        $user = $employee->user()->id;
+        
+        return $this->sendActionResult( $employee->delete() && $user->delete() );
+    }
+
     public function randomizeCompanyEmailPassword() {
         if (!auth()->user()->employee()->exists())
             return response()->json(['message' => 'There employee record does not exists for this user.'], 400);
@@ -117,16 +129,13 @@ class EmployeeController extends Controller
 
     public function EmailLogIn() {
         $ch = curl_init();
-
-        curl_setopt($ch, CURLOPT_URL, env('ROUNDCUBE_URL'));
+        curl_setopt($ch, CURLOPT_URL, config('etc.roundcube_url'));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
         curl_setopt($ch, CURLOPT_COOKIEFILE, '');
         curl_setopt($ch, CURLOPT_COOKIEJAR, '');
         $response = curl_exec($ch);
 
         preg_match('|<input type="hidden" name="_token" value="([A-z0-9]*)">|', $response, $matches);
-
-        dd($response);
 
         if ($matches) $token = $matches[1];
         else return response()->json(['message' => 'Cannot parse the CSRF form login token.'], 500);
@@ -144,7 +153,7 @@ class EmployeeController extends Controller
             '_pass' => $password
         );
 
-        curl_setopt($ch, CURLOPT_URL, "https://staff.loakarya.co/email/roundcube/". '?_task=login');
+        curl_setopt($ch, CURLOPT_URL, config('etc.roundcube_url') . '?_task=login');
         curl_setopt($ch, CURLOPT_COOKIEFILE, '');
         curl_setopt($ch, CURLOPT_COOKIEJAR, '');
         curl_setopt($ch, CURLOPT_POST, TRUE);
@@ -157,7 +166,8 @@ class EmployeeController extends Controller
         if($response_info['http_code'] == 302)
         {
             // find all relevant cookies to set (php session + rc auth cookie)
-            preg_match_all('/set-cookie: (.*)\b/', $response, $cookies);
+            preg_match_all('/Set-Cookie: (.*)\b/', $response, $cookies);
+            
             $cookie_return = array();
 
             foreach($cookies[1] as $cookie)
