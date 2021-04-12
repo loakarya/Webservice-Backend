@@ -24,7 +24,7 @@ class EmployeeResource extends JsonResource
             // 'city' => $this->,
             // 'province' => $this->,
             // 'country' => $this->,
-            'employee_number' => $this->employee_number,
+            'employee_code' => $this->employee_number,
             'private_email' => $this->private_email,
             'bank_account_number' => $this->bank_account_number,
             'bank_account_provider' => $this->bank_account_provider,

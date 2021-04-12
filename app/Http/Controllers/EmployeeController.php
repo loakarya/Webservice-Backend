@@ -40,12 +40,15 @@ class EmployeeController extends Controller
             'city' => 'required|max:190',
             'province' => 'required|max:90',
             'country' => 'required|max:90',
-            'employee_number' => 'required|integer|gte:0|unique:employees,employee_number',
+            'employee_code' => 'required|integer|gte:0|unique:employees,employee_code',
             'private_email' => 'required|email|max:100|unique:employees,private_email',
             'bank_account_number' => 'required',
             'bank_account_provider' => 'required|max:100',
-            'division' => 'required|max:100',
-            'title' => 'required|max:100',
+            'status' => 'required|max:50',
+            'phone' => 'required|gte:0',
+            'role' => 'required|max:100',
+            'level' => 'required|max:50',
+            'chapter' => 'required|max:100'
         ]);
 
         if ($validation->fails())
@@ -71,14 +74,18 @@ class EmployeeController extends Controller
         $employee = new Employee;
         $userCompanyEmailPassword = Str::random(40);
 
-        $employee->employee_number = $request->employee_number;
+        $employee->employee_code = $request->employee_code;
         $employee->private_email = $request->private_email;
         $employee->company_email_password = Crypt::encryptString($userCompanyEmailPassword);
         $employee->bank_account_number = $request->bank_account_number;
         $employee->bank_account_provider = $request->bank_account_provider;
-        $employee->division = $request->division;
-        $employee->title = $request->title;
-        
+        $employee->status = $request->status;
+        $employee->phone = $request->phone;
+        $employee->role = $request->role;
+        $employee->level = $request->level;
+        $employee->chapter = $request->chapter;
+
+
         $employeeSaveStatus = $user->employee()->save( $employee );
         
         if ( !$employeeSaveStatus ) return response()->json(['message' => "Failed to save the employee's data."], 500);

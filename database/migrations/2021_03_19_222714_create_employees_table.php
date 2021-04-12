@@ -16,13 +16,16 @@ class CreateEmployeesTable extends Migration
         Schema::create('employees', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id');
-            $table->integer('employee_number')->unique();
+            $table->bigInteger('employee_code')->unique();
             $table->string('private_email', 100)->unique();
             $table->string('company_email_password', 500);
-            $table->integer('bank_account_number');
+            $table->bigInteger('bank_account_number');
             $table->string('bank_account_provider', 100);
-            $table->string('division', 100);
-            $table->string('title', 100);
+            $table->string('status', 50);
+            $table->bigInteger('phone');
+            $table->string('role', 100);
+            $table->string('level', 50);
+            $table->string('chapter', 100);
             $table->timestamps();
             $table->softDeletes();
         });
