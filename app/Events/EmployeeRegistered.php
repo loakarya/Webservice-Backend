@@ -15,7 +15,7 @@ class EmployeeRegistered
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $user;
+    public $user, $employeeSetPasswordLink;
 
     /**
      * Create a new event instance.
@@ -25,6 +25,7 @@ class EmployeeRegistered
     public function __construct(Employee $user)
     {
         $this->user = $user;
+        $this->employeeSetPasswordLink = config('etc.employee_set_password_link');
     }
 
     /**

@@ -30,6 +30,7 @@ Route::group([ 'prefix' => 'auth' ], function () {
         return response()->json(['message' => 'Please check your auth token!'], 401);
     });
     Route::post('/login', [AuthController::class, 'login'])->name('login');
+    Route::post('/login/google', [AuthController::class, 'loginGoogle']);
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/refresh', [AuthController::class, 'refresh']);
     Route::get('/me', [AuthController::class, 'me'])->middleware('auth');

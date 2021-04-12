@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use Laravel\Socialite\Facades\Socialite;
+use App\Models\Employee;
 use Illuminate\Http\Request;
+use Google_Client;
 
 class AuthController extends Controller
 {
@@ -13,7 +16,7 @@ class AuthController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['login']]);
+        $this->middleware('auth:api', ['except' => ['login', 'loginGoogle']]);
     }
 
     /**
@@ -40,6 +43,19 @@ class AuthController extends Controller
         $user->save();
 
         return $this->respondWithToken($token);
+    }
+
+    public function loginGoogle()
+    {
+        $id_token = request( 'token' );
+        $client = new Google_Client(['client_id' => config('services.GOOGLEAPI_CLIENT_ID')]);  // Specify the CLIENT_ID of the app that accesses the backend
+        $payload = $client->verifyIdToken($id_token);
+        if ($payload) {
+            $employee = Employee::where('private_email', $payload['email']);
+            if ( $employee->doesntExist() ) return response()->json(['message', 'There is no employee account exists for email ' . $payload->email], 401);
+            $employee = $employee->first();
+            return $this->respondWithToken( auth()->tokenById($employee->user()->first()->id) ) ;
+        }
     }
 
     /**
