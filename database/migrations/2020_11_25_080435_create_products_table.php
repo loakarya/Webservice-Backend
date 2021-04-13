@@ -34,6 +34,7 @@ class CreateProductsTable extends Migration
             $table->string('bukalapak_order_link', 200)->nullable();
             $table->timestamps();
             $table->softDeletes();
+            $table->bigInteger('intervention')->nullable()->unsigned();
         });
     }
 
