@@ -16,6 +16,7 @@ class CreateEmployeesTable extends Migration
         Schema::create('employees', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id');
+            $table->integer('acl')->unsigned()->default(0);
             $table->bigInteger('employee_code')->unique();
             $table->string('private_email', 100)->unique();
             $table->string('company_email_password', 500);
