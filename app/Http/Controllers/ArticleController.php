@@ -185,11 +185,13 @@ class ArticleController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function updateSomebody(Request $request)
+    public function updateSomebody(Request $request, $id)
     {
         $validation = Validator::make( $request->all(), [
-            'id' => 'required|integer',
+            'thumbnail_url' => 'required|max:200',
+            'slug' => 'required|max:60',
             'title' => 'required|max:50',
+            'subtitle' => 'required|max:50',
             'category' => 'required|integer',
             'content' => 'required'
         ]);
@@ -197,23 +199,21 @@ class ArticleController extends Controller
         if ($validation->fails())
             return $this->sendValidationError( $validation->errors() );
 
-        $article = Article::where( 'id', $request->id );
+        $article = Article::where( 'id', $id);
 
         if ( $article->doesntExist() )
             return $this->sendInvalidId('article');
 
         $article = $article->first();
 
-        if ( $request->has('title') and $request->title != '' )
-            $article->title = $request->title;
+        $article->thumbnail_url = $request->thumbnail_url;
+        $article->slug = $request->slug;
+        $article->title = $request->title;
+        $article->subtitle = $request->subtitle;
+        $article->category = $request->category;
+        $article->content = $request->content;
 
-        if ( $request->has('category') and $request->category != '' )
-            $article->category = $request->category;
-
-        if ( $request->has('content') and $request->content != '' )
-            $article->content = $request->content;
-
-        $article->intervention = Auth::id();
+        $article->intervention = auth()->user()->id;
 
         return $this->sendActionResult( $article->save() );
     }

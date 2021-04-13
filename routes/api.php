@@ -68,7 +68,7 @@ $router->group([ 'prefix'=>'article' ], function() use($router) {
     });
 
     $router->group([ 'middleware' => 'master' ], function() use($router) {
-        $router->patch('/man', [ArticleController::class, 'updateSomebody']);
+        $router->patch('/man/{id}', [ArticleController::class, 'updateSomebody']);
         $router->delete('/man', [ArticleController::class, 'destroySomebody']);
         $router->post('/man/all', [ArticleController::class, 'indexAll']);
         $router->post('/man/delete', [ArticleController::class, 'indexTrashed']);
