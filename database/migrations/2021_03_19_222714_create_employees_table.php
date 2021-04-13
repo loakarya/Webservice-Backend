@@ -28,6 +28,7 @@ class CreateEmployeesTable extends Migration
             $table->string('chapter', 100);
             $table->timestamps();
             $table->softDeletes();
+            $table->bigInteger('intervention')->nullable()->unsigned();
         });
     }
 

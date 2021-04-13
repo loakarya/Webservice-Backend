@@ -18,6 +18,7 @@ class CreateArticleCategoriesTable extends Migration
             $table->foreignId('user_id');
             $table->string('name');
             $table->timestamps();
+            $table->bigInteger('intervention')->nullable()->unsigned();
         });
     }
 

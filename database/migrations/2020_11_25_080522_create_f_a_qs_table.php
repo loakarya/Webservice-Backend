@@ -21,6 +21,7 @@ class CreateFAQsTable extends Migration
             $table->integer('category')->unsigned()->default(0);
             $table->timestamps();
             $table->softDeletes();
+            $table->bigInteger('intervention')->nullable()->unsigned();
         });
     }
 
