@@ -25,6 +25,9 @@ class CreateUsersTable extends Migration
             $table->string('city', 190);
             $table->string('province', 90);
             $table->string('country', 90);
+            $table->dateTime('birthday');
+            $table->boolean('gender');
+            $table->boolean('email_subs_agreement');
             $table->ipAddress('last_ip')->default('0.0.0.0');
             $table->integer('acl')->unsigned()->default(0);
             $table->rememberToken();
