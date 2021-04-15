@@ -100,7 +100,7 @@ $router->group([ 'prefix' => 'product' ], function() use ($router) {
 
     $router->group([ 'middleware' => 'admin' ], function() use($router) {
         $router->put('/', [ProductController::class, 'store']);
-        $router->patch('/', [ProductController::class, 'update']);
+        $router->patch('/{id}', [ProductController::class, 'update']);
         $router->delete('/{id}', [ProductController::class, 'destroy']);
         $router->post('/user', [ProductController::class, 'indexOwned']);
         $router->post('/image', [ProductController::class, 'uploadImage']);
@@ -140,6 +140,7 @@ $router->group( ['prefix' => 'employee' ], function() use($router) {
     
     $router->group([ 'middleware' => 'admin' ], function() use($router) {
         $router->get('/', [EmployeeController::class, 'index']);
+        $router->get('/me', [EmployeeController::class, 'showMe']);
         $router->get('/email', [EmployeeController::class, 'EmailLogIn']);
         $router->get('/view/{id}', [EmployeeController::class, 'show']);
     });
