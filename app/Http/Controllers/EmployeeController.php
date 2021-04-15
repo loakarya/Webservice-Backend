@@ -30,6 +30,10 @@ class EmployeeController extends Controller
         ]);
     }
 
+    public function showMe() {
+        return ( auth()->user()->employee()->with('user')->first() );
+    }
+
     public function store( Request $request ) {
         $validation = Validator::make( $request->all(), [
             'email' => 'required|email|max:100|unique:users,email',
