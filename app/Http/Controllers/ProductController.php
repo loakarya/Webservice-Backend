@@ -118,7 +118,7 @@ class ProductController extends Controller
         $validation = Validator::make( $request->all(), [
             'title' => 'required|max:200',
             'slug' => 'required|max:210',
-            'detail' => 'required|max:500',
+            'detail' => 'required|max:2000',
             'material' => 'required|max:200',
             'thumbnail_url' => 'required|max:200',
             'picture_url_1' => 'required|max:200',

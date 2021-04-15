@@ -18,7 +18,7 @@ class CreateProductsTable extends Migration
             $table->foreignId('user_id');
             $table->string('title', 200);
             $table->string('slug', 210);
-            $table->string('detail', 500);
+            $table->string('detail', 2000);
             $table->string('material', 200);
             $table->string('thumbnail_url', 200);
             $table->string('picture_url_1', 200);
