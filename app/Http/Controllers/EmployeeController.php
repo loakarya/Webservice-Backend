@@ -14,7 +14,7 @@ use App\Events\EmployeeRegistered;
 class EmployeeController extends Controller
 {
     public function index( Request $request ) {
-        return $this->optionalPagination($request, User::where('acl', 1)->orWhere('acl', 2)->with('employee'));
+        return $this->optionalPagination($request, Employee::select()->with('user'));
     }
 
     public function show($id) {
@@ -39,11 +39,12 @@ class EmployeeController extends Controller
             'email' => 'required|email|max:100|unique:users,email',
             'first_name' => 'required|max:20',
             'last_name' => 'required|max:50',
+            'birthday' => 'required|date',
+            'gender' => 'required|boolean',
             'address' => 'required|max:200',
             'zip_code' => 'required|max:10',
             'city' => 'required|max:190',
             'province' => 'required|max:90',
-            'country' => 'required|max:90',
             'employee_code' => 'required|integer|gte:0|unique:employees,employee_code',
             'private_email' => 'required|email|max:100|unique:employees,private_email',
             'bank_account_number' => 'required',
@@ -63,13 +64,14 @@ class EmployeeController extends Controller
         $user->email = $request->email;
         $user->first_name = $request->first_name;
         $user->last_name = $request->last_name;
+        $user->birthday = $request->birthday;
+        $user->gender = $request->gender;
         $user->address = $request->address;
         $user->zip_code = $request->zip_code;
         $user->city = $request->city;
         $user->province = $request->province;
-        $user->country = $request->country;
+        $user->email_subs_agreement = 1;
         $user->email_verified_at = now();
-        $user->acl = 1;
 
         $accountSaveStatus = $user->save();
 
