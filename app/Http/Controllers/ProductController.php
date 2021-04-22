@@ -81,7 +81,7 @@ class ProductController extends Controller
             'picture_3' => 'image|max:2048',
             'picture_4' => 'image|max:2048',
             'picture_5' => 'image|max:2048',
-            'title' => 'required|max:200',
+            'name' => 'required|max:200',
             'description' => 'required|max:200',
             'order_link' => 'required|url|max:200',
         ]);
@@ -99,7 +99,7 @@ class ProductController extends Controller
 
         $product = new Product;
         $product->user_id = Auth::id();
-        $product->title = $request->title;
+        $product->name = $request->name;
         $product->description = $request->description;
         $product->order_link = $request->order_link;
         $product->picture_url = $fileName;
@@ -116,7 +116,7 @@ class ProductController extends Controller
     public function store(Request $request)
     {
         $validation = Validator::make( $request->all(), [
-            'title' => 'required|max:200',
+            'name' => 'required|max:200',
             'slug' => 'required|max:210',
             'detail' => 'required|max:2000',
             'material' => 'required|max:200',
@@ -139,7 +139,7 @@ class ProductController extends Controller
     
         $product = new Product;
         $product->user_id = Auth::id();
-        $product->title = $request->title;
+        $product->name = $request->name;
         $product->slug = $request->slug;
         $product->detail = $request->detail;
         $product->material = $request->material;
@@ -208,7 +208,7 @@ class ProductController extends Controller
     public function update(Request $request, $id)
     {
         $validation = Validator::make( $request->all(), [
-            'title' => 'required|max:200',
+            'name' => 'required|max:200',
             'slug' => 'required|max:210',
             'detail' => 'required|max:2000',
             'material' => 'required|max:200',
@@ -235,7 +235,7 @@ class ProductController extends Controller
             return $this->sendInvalidId('product');
 
         $product = $product->first();
-        $product->title = $request->title;
+        $product->name = $request->name;
         $product->slug = $request->slug;
         $product->detail = $request->detail;
         $product->material = $request->material;
@@ -251,6 +251,7 @@ class ProductController extends Controller
         $product->tokopedia_order_link = $request->tokopedia_order_link;
         $product->shopee_order_link = $request->shopee_order_link;
         $product->bukalapak_order_link = $request->bukalapak_order_link;
+        $product->intervention = auth()->id();
         
         return $this->sendActionResult( $product->save() );
     }
@@ -303,7 +304,7 @@ class ProductController extends Controller
     {
         return response()->json([
             'status' => true,
-            'data' => FeaturedProduct::with('product:id,thumbnail_url,title')
+            'data' => FeaturedProduct::with('product:id,thumbnail_url,name')
                         ->get()
         ]);
     }
