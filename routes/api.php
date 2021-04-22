@@ -30,6 +30,7 @@ Route::group([ 'prefix' => 'auth' ], function () {
         return response()->json(['message' => 'Please check your auth token!'], 401);
     });
     Route::post('/login', [AuthController::class, 'login'])->name('login');
+    Route::post('/login/google', [AuthController::class, 'loginGoogle']);
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/refresh', [AuthController::class, 'refresh']);
     Route::get('/me', [AuthController::class, 'me'])->middleware('auth');
@@ -67,7 +68,7 @@ $router->group([ 'prefix'=>'article' ], function() use($router) {
     });
 
     $router->group([ 'middleware' => 'master' ], function() use($router) {
-        $router->patch('/man', [ArticleController::class, 'updateSomebody']);
+        $router->patch('/man/{id}', [ArticleController::class, 'updateSomebody']);
         $router->delete('/man', [ArticleController::class, 'destroySomebody']);
         $router->post('/man/all', [ArticleController::class, 'indexAll']);
         $router->post('/man/delete', [ArticleController::class, 'indexTrashed']);
@@ -99,7 +100,7 @@ $router->group([ 'prefix' => 'product' ], function() use ($router) {
 
     $router->group([ 'middleware' => 'admin' ], function() use($router) {
         $router->put('/', [ProductController::class, 'store']);
-        $router->patch('/', [ProductController::class, 'update']);
+        $router->patch('/{id}', [ProductController::class, 'update']);
         $router->delete('/{id}', [ProductController::class, 'destroy']);
         $router->post('/user', [ProductController::class, 'indexOwned']);
         $router->post('/image', [ProductController::class, 'uploadImage']);
@@ -108,7 +109,7 @@ $router->group([ 'prefix' => 'product' ], function() use ($router) {
 
 $router->group( ['prefix' => 'user' ], function() use($router) {
     $router->put('/', [UserController::class, 'store']);
-    $router->get('/email', [UserController::class, 'EmailLogIn']);
+    
     
     $router->group([ 'middleware' => 'auth:api' ], function() use($router) {
         $router->patch('/', [UserController::class, 'updateDetails']);
@@ -139,13 +140,16 @@ $router->group( ['prefix' => 'employee' ], function() use($router) {
     
     $router->group([ 'middleware' => 'admin' ], function() use($router) {
         $router->get('/', [EmployeeController::class, 'index']);
-        $router->get('/{id}', [EmployeeController::class, 'show']);
+        $router->get('/me', [EmployeeController::class, 'showMe']);
+        $router->get('/email', [EmployeeController::class, 'EmailLogIn']);
+        $router->get('/view/{id}', [EmployeeController::class, 'show']);
     });
 
     $router->group([ 'middleware' => 'master' ], function() use($router) {
-        $router->put('/{id}', [EmployeeController::class, 'store']);
+        $router->put('/', [EmployeeController::class, 'store']);
         $router->patch('/', [EmployeeController::class, 'update']);
         $router->patch('/email/randomize', [EmployeeController::class, 'randomizeCompanyEmailPassword']);
+        $router->delete('/{id}', [EmployeeController::class, 'destroy']);
     });
 
 });

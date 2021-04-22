@@ -13,12 +13,12 @@ class CreateFeaturedProductsTable extends Migration
      */
     public function up()
     {
-        // Schema::create('featured_products', function (Blueprint $table) {
-        //     $table->id();
-        //     $table->foreignId('product_id');
-        //     $table->bigInteger('user_id')->unsigned();
-        //     $table->timestamps();
-        // });
+        Schema::create('featured_products', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('product_id');
+            $table->bigInteger('user_id')->unsigned();
+            $table->timestamps();
+        });
     }
 
     /**
@@ -28,6 +28,6 @@ class CreateFeaturedProductsTable extends Migration
      */
     public function down()
     {
-        // Schema::dropIfExists('featured_products');
+        Schema::dropIfExists('featured_products');
     }
 }

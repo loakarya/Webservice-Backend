@@ -18,16 +18,14 @@ class MasterUAC
     {
         if ( !auth()->check() )
             return response()->json([
-                'status' => false,
                 'message' => 'You are not logged in.'
             ], 401);
 
-        if ( auth()->user() != null and auth()->user()->acl == 2 )
+        if ( auth()->user()->employee() != null and auth()->user()->employee()->first()->acl == 2 )
             return $next($request);
 
         return response()->json([
-            'status' => false,
-            'message' => 'You are not an admin'
+            'message' => 'You are not a master.'
         ], 403);
     }
 }

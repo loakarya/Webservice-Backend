@@ -81,7 +81,7 @@ class ProductController extends Controller
             'picture_3' => 'image|max:2048',
             'picture_4' => 'image|max:2048',
             'picture_5' => 'image|max:2048',
-            'title' => 'required|max:200',
+            'name' => 'required|max:200',
             'description' => 'required|max:200',
             'order_link' => 'required|url|max:200',
         ]);
@@ -99,7 +99,7 @@ class ProductController extends Controller
 
         $product = new Product;
         $product->user_id = Auth::id();
-        $product->title = $request->title;
+        $product->name = $request->name;
         $product->description = $request->description;
         $product->order_link = $request->order_link;
         $product->picture_url = $fileName;
@@ -116,9 +116,9 @@ class ProductController extends Controller
     public function store(Request $request)
     {
         $validation = Validator::make( $request->all(), [
-            'title' => 'required|max:200',
+            'name' => 'required|max:200',
             'slug' => 'required|max:210',
-            'detail' => 'required|max:500',
+            'detail' => 'required|max:2000',
             'material' => 'required|max:200',
             'thumbnail_url' => 'required|max:200',
             'picture_url_1' => 'required|max:200',
@@ -134,9 +134,12 @@ class ProductController extends Controller
             'bukalapak_order_link' => 'max:200',
         ]);
 
+        if ($validation->fails())
+        return $this->sendValidationError( $validation->errors() );
+    
         $product = new Product;
         $product->user_id = Auth::id();
-        $product->title = $request->title;
+        $product->name = $request->name;
         $product->slug = $request->slug;
         $product->detail = $request->detail;
         $product->material = $request->material;
@@ -157,10 +160,22 @@ class ProductController extends Controller
     }
 
     public function uploadImage( Request $request ) {
+        $validation = Validator::make( $request->all(), [
+            'upload' => 'required|image|max:2048',
+        ]);
+
+        if ($validation->fails())
+            return $this->sendValidationError( $validation->errors() );
+        
+        if ( !$request->upload->isValid() )
+            return response()->json( [
+                'status' => false,
+                'message' => 'Invalid image file.'], 400 );
+
         $path = $request->file('upload')->store('public/product');
 
         return response()->json( [
-            'url' => env('APP_URL') . Storage::url($path)
+            'url' => url(Storage::url($path))
         ]);
     }
 
@@ -190,38 +205,54 @@ class ProductController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request)
+    public function update(Request $request, $id)
     {
         $validation = Validator::make( $request->all(), [
-            'id' => 'required|integer',
-            'picture' => 'image|max:2048',
-            'title' => 'max:200',
-            'description' => 'max:200',
-            'order_link' => 'url|max:200',
+            'name' => 'required|max:200',
+            'slug' => 'required|max:210',
+            'detail' => 'required|max:2000',
+            'material' => 'required|max:200',
+            'thumbnail_url' => 'required|max:200',
+            'picture_url_1' => 'required|max:200',
+            'picture_url_2' => 'max:200',
+            'picture_url_3' => 'max:200',
+            'picture_url_4' => 'max:200',
+            'picture_url_5' => 'max:200',
+            'price' => 'required|integer',
+            'discount' => 'required|integer',
+            'category' => 'required|integer|gte:0|lte:2',
+            'tokopedia_order_link' => 'max:200',
+            'shopee_order_link' => 'max:200',
+            'bukalapak_order_link' => 'max:200',
         ]);
 
         if ( $validation->fails() )
             return $this->sendValidationError( $validation->errors() );
 
-        $product = User::find( Auth::id() )->products()->where( 'id', $request->id );
+        $product = User::find( Auth::id() )->products()->where( 'id', $id );
 
         if ( $product->doesntExist() )
             return $this->sendInvalidId('product');
 
         $product = $product->first();
-
-        if ( $request->has('title') and $request->title != '' )
-            $product->title = $request->title;
-
-        if ( $request->has('description')  and $request->description != '' )
-            $product->description = $request->description;
-
-        if ( $request->has('order_link')  and $request->order_link != '' )
-            $product->order_link = $request->order_link;
-
-        if ( $request->hasFile('picture') and $request->picture->isValid() )
-            $product->picture_url = $request->picture_url;
-
+        $product->name = $request->name;
+        $product->slug = $request->slug;
+        $product->detail = $request->detail;
+        $product->material = $request->material;
+        $product->thumbnail_url = $request->thumbnail_url;
+        $product->picture_url_1 = $request->picture_url_1;
+        $product->picture_url_2 = $request->picture_url_2;
+        $product->picture_url_3 = $request->picture_url_3;
+        $product->picture_url_4 = $request->picture_url_4;
+        $product->picture_url_5 = $request->picture_url_5;
+        $product->price = $request->price;
+        $product->discount = $request->discount;
+        $product->category = $request->category;
+        $product->tokopedia_order_link = $request->tokopedia_order_link;
+        $product->shopee_order_link = $request->shopee_order_link;
+        $product->bukalapak_order_link = $request->bukalapak_order_link;
+        $product->intervention = auth()->id();
+        
         return $this->sendActionResult( $product->save() );
     }
 
@@ -273,7 +304,7 @@ class ProductController extends Controller
     {
         return response()->json([
             'status' => true,
-            'data' => FeaturedProduct::with('product:id,thumbnail_url,title')
+            'data' => FeaturedProduct::with('product:id,thumbnail_url,name')
                         ->get()
         ]);
     }

@@ -23,6 +23,7 @@ class CreateCompanyAccountsTable extends Migration
             $table->string('password', 500);
             $table->timestamps();
             $table->softDeletes();
+            $table->bigInteger('intervention')->nullable()->unsigned();
         });
     }
 

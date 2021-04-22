@@ -28,7 +28,19 @@ RUN useradd -G www-data,root -u $uid -d /home/$user $user
 RUN mkdir -p /home/$user/.composer && \
     chown -R $user:$user /home/$user
 
+# Install supervisor for maintaining laravel queue worker process
+RUN apt-get update && apt-get install -y \
+    supervisor \
+    nano \
+    sudo
+
+RUN usermod -aG sudo $user
+RUN echo "$user ALL=(ALL) NOPASSWD: /usr/bin/supervisord" >> /etc/sudoers
+
+# CMD ["sudo", "supervisord", "-n", "-c", "/etc/supervisor/supervisord.conf"]
+
 # Set working directory
 WORKDIR /var/www
 
 USER $user
+
