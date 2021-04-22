@@ -68,11 +68,13 @@ class UserController extends Controller
             'password' => 'required',
             'first_name' => 'required|max:20',
             'last_name' => 'required|max:50',
+            'birthday' => 'required|date',
+            'gender' => 'required|boolean',
             'address' => 'required|max:200',
             'zip_code' => 'required|max:10',
             'city' => 'required|max:190',
             'province' => 'required|max:90',
-            'country' => 'required|max:90'
+            'email_subs_agreement' => 'required|boolean',
         ]);
         
         if ($validation->fails())
@@ -83,11 +85,13 @@ class UserController extends Controller
         $user->email = $request->email;
         $user->first_name = $request->first_name;
         $user->last_name = $request->last_name;
+        $user->birthday = $request->birthday;
+        $user->gender = $request->gender;
         $user->address = $request->address;
         $user->zip_code = $request->zip_code;
         $user->city = $request->city;
         $user->province = $request->province;
-        $user->country = $request->country;
+        $user->email_subs_agreement = $request->email_subs_agreement;
 
         $user->save();
 
@@ -122,11 +126,13 @@ class UserController extends Controller
         $validation = Validator::make( $request->all(), [
             'first_name' => 'required|max:20',
             'last_name' => 'required|max:50',
+            'birthday' => 'required|date',
+            'gender' => 'required|boolean',
             'address' => 'required|max:200',
             'zip_code' => 'required|max:10',
             'city' => 'required|max:190',
             'province' => 'required|max:90',
-            'country' => 'required|max:90'
+            'email_subs_agreement' => 'required|boolean',
         ]);
      
         if ($validation->fails())
@@ -136,11 +142,13 @@ class UserController extends Controller
 
         $user->first_name = $request->first_name;
         $user->last_name = $request->last_name;
+        $user->birthday = $request->birthday;
+        $user->gender = $request->gender;
         $user->address = $request->address;
         $user->zip_code = $request->zip_code;
         $user->city = $request->city;
         $user->province = $request->province;
-        $user->country = $request->country;
+        $user->email_subs_agreement = $request->email_subs_agreement;
 
         return $this->sendActionResult( $user->save() );
     }
