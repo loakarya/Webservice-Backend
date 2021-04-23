@@ -183,17 +183,6 @@ class UserController extends Controller
     }
 
     /**
-     * Update the user username
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function updateUsername(Request $request)
-    {
-
-    }
-
-    /**
      * Remove the specified resource from storage.
      *
      * @param  int  $id
