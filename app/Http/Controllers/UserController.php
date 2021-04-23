@@ -21,7 +21,7 @@ class UserController extends Controller
     {
         return $this->optionalPagination(
             $request,
-            User::where('acl', 0)
+            User::select()
         );
     }
 
@@ -108,10 +108,9 @@ class UserController extends Controller
      */
     public function show()
     {
-        return response()->json([
-            'status' => 'true',
-            'data' => Auth::user()
-        ]);
+        return response()->json(
+            Auth::user()
+        );
     }
 
     /**
@@ -162,7 +161,7 @@ class UserController extends Controller
     {
         $validation = Validator::make( $request->all(), [
             'old_password' => 'required',
-            'new_password' => 'required|regex:/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/',
+            'new_password' => 'required|regex:/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&]{8,}$/',
             'new_password_confirm' => 'required|same:new_password',
         ]);
      
