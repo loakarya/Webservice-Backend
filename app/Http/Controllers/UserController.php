@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
-Use Illuminate\Support\Str;
 use App\Models\User;
 
 class UserController extends Controller
@@ -22,7 +21,7 @@ class UserController extends Controller
     {
         return $this->optionalPagination(
             $request,
-            User::where('acl', 0)
+            User::select()
         );
     }
 
@@ -109,10 +108,9 @@ class UserController extends Controller
      */
     public function show()
     {
-        return response()->json([
-            'status' => 'true',
-            'data' => Auth::user()
-        ]);
+        return response()->json(
+            Auth::user()
+        );
     }
 
     /**
@@ -163,7 +161,7 @@ class UserController extends Controller
     {
         $validation = Validator::make( $request->all(), [
             'old_password' => 'required',
-            'new_password' => 'required|regex:/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/',
+            'new_password' => 'required|regex:/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&]{8,}$/',
             'new_password_confirm' => 'required|same:new_password',
         ]);
      
@@ -183,17 +181,6 @@ class UserController extends Controller
     }
 
     /**
-     * Update the user username
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function updateUsername(Request $request)
-    {
-
-    }
-
-    /**
      * Remove the specified resource from storage.
      *
      * @param  int  $id
@@ -204,74 +191,6 @@ class UserController extends Controller
         $this->logout();
         $user = User::find( Auth::id() );
         return $this->sendActionResult( $user->delete() );
-    }
-
-    public function login(Request $request) {
-        $user = User::withTrashed()
-                                ->where('username', $request->username);
-
-        if ( $user->doesntExist() )
-            return response()->json([
-                'status' => false,
-                'message' => 'Credential not found or incorrect.'
-            ], 401);
-
-        $user = $user->first();
-
-        if ( Hash::check($request->password, $user->password) ) {
-            if ( $user->trashed() )
-                return response()->json([
-                    'status' => false,
-                    'message' => 'The user has been deleted.'
-                ], 410);
-
-            $apiToken = Str::random(128);
-
-            $token = User::where( 'username', $request->username )
-                        ->first()
-                        ->token()
-                        ->first();
-            $token->api = $apiToken;
-            $token->api_generated = time();
-            $user->token()->save($token);
-
-            $user->last_ip = $request->ip();
-
-            $aliveFor = null;
-            $role = null;
-            switch( $user->role ){
-                case $this->role_regular:
-                    $aliveFor = '7 days';
-                    $role = 'regular';
-                break;
-
-                case $this->role_admin:
-                    $aliveFor = '3 days';
-                    $role = 'admin';
-                break;
-
-                case $this->role_master:
-                    $aliveFor = '1 day';
-                    $role = 'master';
-                break;
-            }
-
-            if ( $user->save() )
-                return response()->json([
-                    'status' => true,
-                    'data' => [
-                        'api_token' => $apiToken,
-                        'role' => $role,
-                        'alive_for' => $aliveFor,
-                ]]);
-            else
-                $this->sendServerError();
-        } else {
-            return response()->json([
-                'status' => false,
-                'message' => 'Credential not found or incorrect.'
-            ]);
-        }
     }
 
     /**
