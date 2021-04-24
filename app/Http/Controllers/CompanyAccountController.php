@@ -61,9 +61,9 @@ class CompanyAccountController extends Controller
 
         Log::info( auth()->user()->first_name . ' ' . auth()->user()->last_name . '(' . auth()->id() . ') accessed ' . $companyAccount->name . ' password record.');
 
-        return response()->json([
-            'data' => new CompanyAccountResource( $companyAccount )
-        ]);
+        return response()->json(
+            new CompanyAccountResource( $companyAccount )
+        );
     }
 
     public function update(Request $request, $id) {
