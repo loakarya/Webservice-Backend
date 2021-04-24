@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use App\Models\CompanyAccount;
 use App\Http\Resources\CompanyAccountResource;
 
@@ -35,6 +36,8 @@ class CompanyAccountController extends Controller
         $companyAccount->username = $request->username;
         $companyAccount->password = Crypt::encryptString($request->password);
 
+        Log::info( auth()->user()->first_name . ' ' . auth()->user()->last_name . '(' . auth()->id() . ') created ' . $companyAccount->name . ' password record.');
+
         return $this->sendActionResult( auth()->user()->companyaccount()->save($companyAccount) );
     }
 
@@ -53,8 +56,10 @@ class CompanyAccountController extends Controller
 
         if ( $companyAccount->doesntExist() )
             return $this->sendInvalidId('company account');
-            
+
         $companyAccount = $companyAccount->first();
+
+        Log::info( auth()->user()->first_name . ' ' . auth()->user()->last_name . '(' . auth()->id() . ') accessed ' . $companyAccount->name . ' password record.');
 
         return response()->json([
             'data' => new CompanyAccountResource( $companyAccount )
@@ -86,6 +91,8 @@ class CompanyAccountController extends Controller
         $companyAccount->username = $request->username;
         $companyAccount->password = Crypt::encryptString($request->password);
 
+        Log::info( auth()->user()->first_name . ' ' . auth()->user()->last_name . '(' . auth()->id() . ') updated ' . $companyAccount->name . ' password record.');
+
         return $this->sendActionResult( $companyAccount->save() );
 
 
@@ -97,6 +104,10 @@ class CompanyAccountController extends Controller
         if ( $companyAccount->doesntExist() )
             return $this->sendInvalidId('company account');
 
-        return $this->sendActionResult( $companyAccount->first()->delete() );
+        $companyAccount = $companyAccount->first();
+
+        Log::info( auth()->user()->first_name . ' ' . auth()->user()->last_name . '(' . auth()->id() . ') removed ' . $companyAccount->name . ' password record.');
+
+        return $this->sendActionResult( $companyAccount->delete() );
     }
 }
